@@ -1,0 +1,57 @@
+from pywinauto import Desktop
+import pyautogui
+import tkinter as tk
+import time
+
+# Hàm để tìm và kích hoạt cửa sổ trình duyệt
+def activate_browser_window(title):
+    windows = Desktop(backend="uia").windows()
+    for window in windows:
+        if title in window.window_text():
+            window.set_focus()
+            break
+
+# Hàm để giả lập input dữ liệu từ quét mã QR
+def simulate_qr_scan(data, window1_title, window2_title, delay):
+    # Kích hoạt và điền dữ liệu vào cửa sổ đầu tiên
+    activate_browser_window(window1_title)
+    time.sleep(delay)  # Đợi một lúc để cửa sổ kích hoạt hoàn toàn
+    pyautogui.write(data)
+    pyautogui.press('enter')
+
+    # Chuyển qua cửa sổ thứ hai và input dữ liệu
+    activate_browser_window(window2_title)
+    time.sleep(delay)  # Đợi một lúc để cửa sổ kích hoạt hoàn toàn
+    pyautogui.write(data)
+    pyautogui.press('enter')
+
+# Hàm submit từ giao diện người dùng
+def submit_input():
+    data = entry.get()
+    delay = float(delay_entry.get())
+    window1_title = 'Single Receive Task - SPX Express System'
+    window2_title = 'LineHaul Trip - SPX Express System'
+    simulate_qr_scan(data, window1_title, window2_title, delay)
+
+# Tạo giao diện người dùng
+root = tk.Tk()
+root.title("Basic Application")
+
+# Nhãn và ô nhập liệu cho dữ liệu QR
+label = tk.Label(root, text="Enter Input:")
+label.pack()
+
+entry = tk.Entry(root)
+entry.pack()
+
+# Nhãn và ô nhập liệu cho thời gian delay
+delay_label = tk.Label(root, text="Enter Delay (seconds):")
+delay_label.pack()
+
+delay_entry = tk.Entry(root)
+delay_entry.pack()
+
+submit_button = tk.Button(root, text="Submit", command=submit_input)
+submit_button.pack()
+
+root.mainloop()
